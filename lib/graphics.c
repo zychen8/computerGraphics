@@ -1879,5 +1879,51 @@ void init_smoke(ParticleSystem *ps, Point emitter) {
     }
 }
 
+typedef struct {
+    Point center;
+    float radius;
+    Color color;
+} Sphere;
 
+// The core Ray Tracing math: Ray-Sphere Intersection
+// Ray: P(t) = O + tD
+// Sphere: (P-C).(P-C) = r^2
+float ray_sphere_intersect(Point o, Vector d, Sphere s) {
+    Vector oc;
+    vector_set(&oc, o.x - s.center.x, o.y - s.center.y, o.z - s.center.z);
+    
+    float a = vector_dot(&d, &d);
+    float b = 2.0f * vector_dot(&oc, &d);
+    float c = vector_dot(&oc, &oc) - s.radius * s.radius;
+    float discriminant = b * b - 4 * a * c;
+
+    if (discriminant < 0) return -1.0f; // Missed
+    return (-b - sqrt(discriminant)) / (2.0f * a); // Hit distance t
+}
+
+void render_raytrace_simple(Image *src, Sphere s) {
+    Point camera = { src->cols / 2.0f, src->rows / 2.0f, -500.0f };
+    
+    for (int y = 0; y < src->rows; y++) {
+        for (int x = 0; x < src->cols; x++) {
+            // Create a ray for each pixel
+            Vector dir;
+            vector_set(&dir, x - camera.x, y - camera.y, 0 - camera.z);
+            vector_normalize(&dir);
+
+            float t = ray_sphere_intersect(camera, dir, s);
+            if (t > 0) {
+                // Basic diffuse shading based on normal at hit point
+                Point hit_p = { camera.x + t * dir.x, camera.y + t * dir.y, camera.z + t * dir.z };
+                Vector n = { hit_p.x - s.center.x, hit_p.y - s.center.y, hit_p.z - s.center.z };
+                vector_normalize(&n);
+                
+                float brightness = fmax(0.1f, vector_dot(&n, &(Vector){0, 0, -1})); // Light from camera
+                Color res;
+                color_scale(&s.color, brightness, &res);
+                image_setColor(src, y, x, res);
+            }
+        }
+    }
+}
 
