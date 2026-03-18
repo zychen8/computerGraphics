@@ -1,0 +1,16 @@
+project/
+├── bin/
+│   ├── image
+│   ├── imagetest
+├── include/
+│   ├── image.h
+│   ├── ppmIO.h
+├── lib/
+│   ├── obj/
+│   ├── libimageIO.a
+│   ├── image.c
+│   ├── Makefile
+├── src/
+│   ├── obj/
+│   ├── imagetest.c
+│   ├── Makefile

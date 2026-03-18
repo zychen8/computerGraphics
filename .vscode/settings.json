@@ -1,0 +1,12 @@
+{
+  "files.associations": {
+    "stdio.h": "c",
+    "image.h": "c",
+    "stdlib.h": "c",
+    "graphics.h": "c",
+    "ppmio.h": "c",
+    "timeb.h": "c",
+    "module.h": "c",
+    "ios": "cpp"
+  }
+}
